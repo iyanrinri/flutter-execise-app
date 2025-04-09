@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import 'package:testing/widgets/double_back_to_exit.dart';
+import 'package:testing/providers/auth_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,12 +15,31 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _rememberController = TextEditingController();
+  final PageController _pageController = PageController();
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _rememberController.dispose();
     super.dispose();
+  }
+
+  void _nextPage() {
+    _pageController.animateToPage(
+      1,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _previousPage() {
+    _pageController.animateToPage(
+      0,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
   }
 
   void _login() {
@@ -27,143 +50,201 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF1EFE4),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
+    return DoubleBackToExitWrapper(
+      child: Scaffold(
+        backgroundColor: const Color(0xFFFFB3B3),
+        body: PageView(
+          controller: _pageController,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            // Page 1 - Welcome
+            Stack(
               children: [
-                // Background custom shape
-                Stack(
-                  children: [
-                    Container(
-                      height: 220,
-                      decoration: const BoxDecoration(
-                        color: Colors.transparent,
-                      ),
-                      child: ClipPath(
-                        clipper: MyClipper(),
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Color(0xFFFF9E9E),
-                                Color(0xFF875C94),
-                                Color(0xFFF2DA65),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Positioned(
-                      top: 80,
-                      left: 30,
-                      child: Text(
-                        "Welcome Back\nLogin to your account",
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    )
-                  ],
+                Positioned.fill(
+                  child: ClipPath(
+                    clipper: WaveClipper(),
+                    child: Container(color: Colors.white),
+                  ),
                 ),
-
-                const SizedBox(height: 40),
-
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  padding: const EdgeInsets.only(top: 24.0, left: 24.0),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(
-                          labelText: "Email",
-                          border: UnderlineInputBorder(),
+                      const Text(
+                        "Selamat Datang!",
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      TextField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        decoration: const InputDecoration(
-                          labelText: "Password",
-                          border: UnderlineInputBorder(),
+                      const SizedBox(height: 8),
+                      const Text("Aplikasi Antrian Digital"),
+                      const SizedBox(height: 15),
+                      ElevatedButton.icon(
+                        onPressed: _nextPage,
+                        icon: const Icon(Icons.arrow_forward),
+                        label: const Text("Selanjutnya"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFF8080),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 30),
-
-                      // Sign in row
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Sign in",
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: _login,
-                            child: Container(
-                              padding: const EdgeInsets.all(14),
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: LinearGradient(
-                                  colors: [Color(0xFF875C94), Color(0xFFCA7D9D)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                              ),
-                              child: const Icon(Icons.arrow_forward, color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 30),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          TextButton(
-                            onPressed: () {},
-                            child: const Text("Sign up"),
-                          ),
-                          TextButton(
-                            onPressed: () {},
-                            child: const Text("Forgot Password"),
-                          ),
-                        ],
-                      )
                     ],
                   ),
                 ),
               ],
             ),
-          ),
+
+            // Page 2 - Login
+            Stack(
+              children: [
+                Positioned.fill(
+                  child: ClipPath(
+                    clipper: WaveClipper(),
+                    child: Container(color: Colors.white),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 24.0, left: 16.0),
+                  // jarak dari atas & kiri
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 40),
+                      ElevatedButton(
+                        onPressed: _previousPage,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFF8080),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.all(12),
+                          shape: const CircleBorder(), // bikin tombolnya bulat
+                        ),
+                        child: const Icon(Icons.arrow_back),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Sign in",
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      TextField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(
+                          labelText: "Email",
+                          prefixIcon: Icon(Icons.email),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          labelText: "Password",
+                          prefixIcon: Icon(Icons.lock),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Checkbox(value: true, onChanged: (_) {}),
+                              const Text("Remember Me"),
+                            ],
+                          ),
+                          TextButton(
+                            onPressed: () {},
+                            child: const Text("Forgot Password?"),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final auth = Provider.of<AuthProvider>(
+                              context,
+                              listen: false,
+                            );
+                            final resultLogin = await auth.login(
+                              _emailController.text,
+                              _passwordController.text,
+                            );
+
+                            if (resultLogin['status'] == true) {
+                              Future.microtask(() {
+                                Navigator.pushReplacementNamed(context, '/dashboard');
+                              });
+                              // Navigator.pushReplacementNamed(
+                              //   context,
+                              //   '/dashboard',
+                              // );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(resultLogin['message'])),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFFF8080),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text("Login"),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextButton(
+                        onPressed: () {},
+                        child: const Text("Don’t have an account? Sign up"),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-// Custom clipper untuk background bentuk organik
-class MyClipper extends CustomClipper<Path> {
+// Wave Clip untuk bagian atas
+class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
-    path.lineTo(0, size.height - 60);
+    path.lineTo(0, size.height * 0.75);
     path.quadraticBezierTo(
-      size.width / 2, size.height,
-      size.width, size.height - 60,
+      size.width / 2,
+      size.height,
+      size.width,
+      size.height * 0.75,
     );
     path.lineTo(size.width, 0);
     path.close();
@@ -171,5 +252,5 @@ class MyClipper extends CustomClipper<Path> {
   }
 
   @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

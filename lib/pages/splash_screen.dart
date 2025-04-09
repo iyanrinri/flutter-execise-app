@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:testing/pages/login.dart';
 import 'dart:async';
+import '../widgets/double_back_to_exit.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -24,11 +25,13 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text(
-          "Queue App",
-          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+    return const DoubleBackToExitWrapper(
+      child: Scaffold(
+        body: Center(
+          child: Text(
+            "Queue App",
+            style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          ),
         ),
       ),
     );
