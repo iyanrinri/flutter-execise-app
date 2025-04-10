@@ -24,14 +24,12 @@ class _DashboardPageState extends State<DashboardPage> {
     return DoubleBackToExitWrapper(
       child: MainLayout(
         title: 'Dashboard',
-        child: Scaffold(
-          body: Center(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 24.0, left: 24.0),
-              child: Text(
-                "Halo ${user?['data']['name'] ?? 'User'}, kamu sudah login!",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 24.0, left: 24.0),
+            child: Text(
+              "Halo ${user?['data']['name'] ?? 'User'}, kamu sudah login!",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
         ),

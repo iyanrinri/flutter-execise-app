@@ -215,117 +215,114 @@ class _MerchantsPageState extends State<MerchantsPage> {
     return DoubleBackToExitWrapper(
       child: MainLayout(
         title: 'Merchants',
-        child: Scaffold(
-          body:
-              isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : RefreshIndicator(
-                    onRefresh: fetchMerchants,
-                    child: ListView.builder(
-                      controller: _scrollController,
-                      itemCount: merchants.length + (isLoadingMore ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index == merchants.length) {
-                          return const Padding(
-                            padding: EdgeInsets.all(16.0),
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        }
-                        final merchant = merchants[index];
-                        return Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                right: 10,
-                                left: 10,
-                                bottom: 10,
-                                top: 10,
-                              ),
-                              child: ListTile(
-                                title: Text(
-                                  merchant['name'],
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'User: ${merchant['user']['name']}',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontStyle: FontStyle.italic,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Created: ${merchant['created_at_human']}',
-                                    ),
-                                  ],
-                                ),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.edit),
-                                      onPressed:
-                                          () => showMerchantDialog(
-                                            merchant: merchant,
-                                          ),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete),
-                                      onPressed: () {
-                                        showDialog(
-                                          context: context,
-                                          builder:
-                                              (context) => AlertDialog(
-                                                title: const Text(
-                                                  'Confirm Delete',
-                                                ),
-                                                content: const Text(
-                                                  'Are you sure you want to delete this merchant?',
-                                                ),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed:
-                                                        () => Navigator.pop(
-                                                          context,
-                                                        ),
-                                                    child: const Text('Cancel'),
-                                                  ),
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      deleteMerchant(
-                                                        merchant['id'],
-                                                      );
-                                                      Navigator.pop(context);
-                                                    },
-                                                    child: const Text('Delete'),
-                                                  ),
-                                                ],
-                                              ),
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => showMerchantDialog(),
+          child: const Icon(Icons.add),
+        ),
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : RefreshIndicator(
+          onRefresh: fetchMerchants,
+          child: ListView.builder(
+            controller: _scrollController,
+            itemCount: merchants.length + (isLoadingMore ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index == merchants.length) {
+                return const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+              final merchant = merchants[index];
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      right: 10,
+                      left: 10,
+                      bottom: 10,
+                      top: 10,
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        merchant['name'],
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'User: ${merchant['user']['name']}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontStyle: FontStyle.italic,
                             ),
-                            if (index <
-                                merchants.length -
-                                    1) // Don't show divider after last item
-                              Divider(
-                                height: 1,
-                                thickness: 1,
-                                color: Colors.grey[300],
-                              ),
-                          ],
-                        );
-                      },
+                          ),
+                          Text(
+                            'Created: ${merchant['created_at_human']}',
+                          ),
+                        ],
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed:
+                                () => showMerchantDialog(
+                              merchant: merchant,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder:
+                                    (context) => AlertDialog(
+                                  title: const Text(
+                                    'Confirm Delete',
+                                  ),
+                                  content: const Text(
+                                    'Are you sure you want to delete this merchant?',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed:
+                                          () => Navigator.pop(
+                                        context,
+                                      ),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        deleteMerchant(
+                                          merchant['id'],
+                                        );
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('Delete'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () => showMerchantDialog(),
-            child: const Icon(Icons.add),
+                  if (index <
+                      merchants.length -
+                          1) // Don't show divider after last item
+                    Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: Colors.grey[300],
+                    ),
+                ],
+              );
+            },
           ),
         ),
       ),

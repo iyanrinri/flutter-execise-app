@@ -6,8 +6,10 @@ import 'package:testing/providers/auth_provider.dart'; // Adjust import path as 
 class MainLayout extends StatefulWidget {
   final String title;
   final Widget child;
+  final Widget? floatingActionButton;
 
-  const MainLayout({super.key, required this.title, required this.child});
+  const MainLayout({super.key, required this.title, required this.child,
+    this.floatingActionButton});
 
   @override
   State<MainLayout> createState() => _MainLayoutState();
@@ -18,12 +20,27 @@ class _MainLayoutState extends State<MainLayout> {
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
     final user = auth.user;
-    final String role = user?['data']?['role'] ?? ''; // Safe access with default
+    final String role =
+        user?['data']?['role'] ?? ''; // Safe access with default
 
     return Scaffold(
       appBar: _buildAppBar(widget.title),
       drawer: _buildDrawer(context, role),
-      body: SafeArea(child: widget.child),
+      floatingActionButton: widget.floatingActionButton,
+      body: SafeArea(
+        child: Padding(
+          // padding: EdgeInsets.only(
+          //   bottom: MediaQuery.of(context).viewPadding.bottom,
+          // ),
+
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            bottom: MediaQuery.of(context).viewPadding.bottom + 16,
+          ),
+          child: widget.child,
+        ),
+      ),
     );
   }
 
@@ -55,21 +72,30 @@ class _MainLayoutState extends State<MainLayout> {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
-                _buildDrawerItem(context, Icons.dashboard, 'Dashboard', '/dashboard'),
-                _buildDrawerItem(context, Icons.store, 'Merchants', '/merchants'),
+                _buildDrawerItem(
+                  context,
+                  Icons.dashboard,
+                  'Dashboard',
+                  '/dashboard',
+                ),
+                _buildDrawerItem(
+                  context,
+                  Icons.store,
+                  'Merchants',
+                  '/merchants',
+                ),
                 if (role == 'ADMIN') // Only show for ADMIN
                   _buildDrawerItem(context, Icons.people, 'Users', '/users'),
                 _buildDrawerItem(context, Icons.person, 'News', '/news'),
               ],
             ),
           ),
-          Divider(
-            height: 1,
-            thickness: 1,
-            color: Colors.grey[300],
-          ),
+          Divider(height: 1, thickness: 1, color: Colors.grey[300]),
           _buildDrawerItem(context, Icons.person, 'Profile', '/profile'),
           _buildLogoutItem(context),
+          Padding(padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewPadding.bottom + 16,
+          ))
         ],
       ),
     );
@@ -98,7 +124,11 @@ class _MainLayoutState extends State<MainLayout> {
   }
 
   ListTile _buildDrawerItem(
-      BuildContext context, IconData icon, String title, String routeName) {
+    BuildContext context,
+    IconData icon,
+    String title,
+    String routeName,
+  ) {
     return ListTile(
       leading: Icon(icon),
       title: Text(title),

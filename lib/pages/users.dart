@@ -24,14 +24,12 @@ class _UsersPageState extends State<UsersPage> {
     return DoubleBackToExitWrapper(
       child: MainLayout(
         title: 'Users Management',
-        child: Scaffold(
-          body: Center(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 24.0, left: 24.0),
-              child: Text(
-                "Users Management Page",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 24.0, left: 24.0),
+            child: Text(
+              "Users Management Page",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
         ),
