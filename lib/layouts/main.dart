@@ -1,18 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:testing/providers/auth_provider.dart'; // Adjust import path as needed
 
-class MainLayout extends StatelessWidget {
+class MainLayout extends StatefulWidget {
   final String title;
   final Widget child;
 
   const MainLayout({super.key, required this.title, required this.child});
 
   @override
+  State<MainLayout> createState() => _MainLayoutState();
+}
+
+class _MainLayoutState extends State<MainLayout> {
+  @override
   Widget build(BuildContext context) {
+    final auth = Provider.of<AuthProvider>(context);
+    final user = auth.user;
+    final String role = user?['data']?['role'] ?? ''; // Safe access with default
+
     return Scaffold(
-      appBar: _buildAppBar(title),
-      drawer: _buildDrawer(context),
-      body: SafeArea(child: child),
+      appBar: _buildAppBar(widget.title),
+      drawer: _buildDrawer(context, role),
+      body: SafeArea(child: widget.child),
     );
   }
 
@@ -35,7 +46,7 @@ class MainLayout extends StatelessWidget {
     );
   }
 
-  Drawer _buildDrawer(BuildContext context) {
+  Drawer _buildDrawer(BuildContext context, String role) {
     return Drawer(
       child: Column(
         children: [
@@ -44,47 +55,23 @@ class MainLayout extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
-                _buildDrawerItem(
-                  context,
-                  Icons.dashboard,
-                  'Dashboard',
-                  '/dashboard',
-                ),
-                _buildDrawerItem(
-                  context,
-                  Icons.store,
-                  'Merchants',
-                  '/merchants',
-                ),
-                _buildDrawerItem(context, Icons.people, 'Users', '/users'),
+                _buildDrawerItem(context, Icons.dashboard, 'Dashboard', '/dashboard'),
+                _buildDrawerItem(context, Icons.store, 'Merchants', '/merchants'),
+                if (role == 'ADMIN') // Only show for ADMIN
+                  _buildDrawerItem(context, Icons.people, 'Users', '/users'),
                 _buildDrawerItem(context, Icons.person, 'News', '/news'),
               ],
             ),
+          ),
+          Divider(
+            height: 1,
+            thickness: 1,
+            color: Colors.grey[300],
           ),
           _buildDrawerItem(context, Icons.person, 'Profile', '/profile'),
           _buildLogoutItem(context),
         ],
       ),
-    );
-  }
-
-  ListTile _buildLogoutItem(BuildContext context) {
-    return ListTile(
-      leading: const Icon(Icons.logout),
-      title: const Text('Logout'),
-      onTap: () async {
-        // Create storage instance
-        const storage = FlutterSecureStorage();
-
-        // Delete token
-        await storage.delete(key: 'token'); // Adjust key name as needed
-
-        // Close drawer
-        Navigator.pop(context);
-
-        // Navigate to login screen (assuming '/login' is your login route)
-        Navigator.pushReplacementNamed(context, '/login');
-      },
     );
   }
 
@@ -111,16 +98,25 @@ class MainLayout extends StatelessWidget {
   }
 
   ListTile _buildDrawerItem(
-    BuildContext context,
-    IconData icon,
-    String title,
-    String routeName,
-  ) {
+      BuildContext context, IconData icon, String title, String routeName) {
     return ListTile(
       leading: Icon(icon),
       title: Text(title),
       onTap: () {
         Navigator.pushReplacementNamed(context, routeName);
+      },
+    );
+  }
+
+  ListTile _buildLogoutItem(BuildContext context) {
+    return ListTile(
+      leading: const Icon(Icons.logout),
+      title: const Text('Logout'),
+      onTap: () async {
+        const storage = FlutterSecureStorage();
+        await storage.delete(key: 'token');
+        Navigator.pop(context);
+        Navigator.pushReplacementNamed(context, '/login');
       },
     );
   }

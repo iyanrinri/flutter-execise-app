@@ -107,7 +107,7 @@ class _NewsPageState extends State<NewsPage> {
                           const CircleAvatar(
                             radius: 20,
                             backgroundImage: NetworkImage(
-                              'https://www.w3schools.com/howto/img_avatar.png',
+                              'https://pbs.twimg.com/profile_images/1513741421937045504/8fEVPrh7_x96.jpg',
                             ),
                           ),
                           const SizedBox(width: 12),
