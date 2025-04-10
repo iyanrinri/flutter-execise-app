@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:testing/widgets/double_back_to_exit.dart';
 import 'package:testing/providers/auth_provider.dart';
+
+import '../services/api_service.dart';
+import 'dashboard.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,6 +22,12 @@ class _LoginPageState extends State<LoginPage> {
   final _rememberController = TextEditingController();
   final PageController _pageController = PageController();
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkUser();
+  }
 
   @override
   void dispose() {
@@ -42,10 +53,35 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _login() {
-    // TODO: implement login logic
-    print("Email: ${_emailController.text}");
-    print("Password: ${_passwordController.text}");
+  void checkUser() async {
+    Future.microtask(() async {
+      final apiService = ApiService();
+      final response = await apiService.sendRequest(
+        method: 'GET',
+        endpoint: '/user',
+        useAuth: true,
+      );
+      if (response?.statusCode == 200) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const DashboardPage()),
+        );
+      } else if (response == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.redAccent,
+            content: Text(
+              "Koneksi kamu sedang bermaslah, mencoba kembali dalam 5 detik",
+            ),
+          ),
+        );
+
+        // ⏳ Coba ulang dalam 3 detik
+        Future.delayed(const Duration(seconds: 3), () {
+          checkUser(); // retry otomatis
+        });
+      }
+    });
   }
 
   @override

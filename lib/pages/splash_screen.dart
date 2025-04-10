@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:testing/pages/dashboard.dart';
-import 'package:testing/pages/login.dart';
 import 'dart:async';
-import '../services/api_service.dart';
+
+import 'package:flutter/material.dart';
 import '../widgets/double_back_to_exit.dart';
+import 'login.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -16,46 +15,15 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    checkUser();
-  }
 
-  void checkUser() async {
-    Future.microtask(() async {
-      final apiService = ApiService();
-      final response = await apiService.sendRequest(
-        method: 'GET',
-        endpoint: '/user',
-        useAuth: true,
+    Timer(const Duration(seconds: 2), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
       );
-      if (response?.statusCode == 200) {
-        if (ModalRoute.of(context)?.settings.name == '/login') {
-          Timer(const Duration(seconds: 1), () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const DashboardPage()),
-            );
-          });
-        }
-      } else if (response == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(backgroundColor: Colors.redAccent, content: Text("Koneksi kamu sedang bermaslah, mencoba kembali dalam 5 detik")),
-        );
-
-        // ⏳ Coba ulang dalam 3 detik
-        Future.delayed(const Duration(seconds: 3), () {
-          checkUser(); // retry otomatis
-        });
-      } else {
-        // Simulasi delay splash screen
-        Timer(const Duration(seconds: 2), () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const LoginPage()),
-          );
-        });
-      }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return DoubleBackToExitWrapper(
