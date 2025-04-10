@@ -28,7 +28,7 @@ class _SplashPageState extends State<SplashPage> {
         useAuth: true,
       );
       if (response?.statusCode == 200) {
-        if (ModalRoute.of(context)?.settings.name == '/login' || ModalRoute.of(context)?.settings.name == '/') {
+        if (ModalRoute.of(context)?.settings.name == '/login') {
           Timer(const Duration(seconds: 1), () {
             Navigator.pushReplacement(
               context,
