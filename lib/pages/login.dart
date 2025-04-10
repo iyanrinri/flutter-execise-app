@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'package:testing/widgets/double_back_to_exit.dart';
@@ -17,6 +16,7 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   final _rememberController = TextEditingController();
   final PageController _pageController = PageController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -182,30 +182,42 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () async {
-                            final auth = Provider.of<AuthProvider>(
-                              context,
-                              listen: false,
-                            );
-                            final resultLogin = await auth.login(
-                              _emailController.text,
-                              _passwordController.text,
-                            );
+                          onPressed:
+                              _isLoading
+                                  ? null
+                                  : () async {
+                                    setState(() => _isLoading = true);
 
-                            if (resultLogin['status'] == true) {
-                              Future.microtask(() {
-                                Navigator.pushReplacementNamed(context, '/dashboard');
-                              });
-                              // Navigator.pushReplacementNamed(
-                              //   context,
-                              //   '/dashboard',
-                              // );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(resultLogin['message'])),
-                              );
-                            }
-                          },
+                                    final auth = Provider.of<AuthProvider>(
+                                      context,
+                                      listen: false,
+                                    );
+                                    final resultLogin = await auth.login(
+                                      _emailController.text,
+                                      _passwordController.text,
+                                    );
+
+                                    setState(() => _isLoading = false);
+
+                                    if (resultLogin['status'] == true) {
+                                      Navigator.pushReplacementNamed(
+                                        context,
+                                        '/dashboard',
+                                      );
+                                    } else {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        // SnackBar(
+                                        //   content: Text(resultLogin['message']),
+                                        // ),
+                                        SnackBar(
+                                          content: Text(resultLogin['message'] ?? 'Login gagal'),
+                                        ),
+
+                                      );
+                                    }
+                                  },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFFF8080),
                             foregroundColor: Colors.white,
@@ -214,7 +226,17 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Text("Login"),
+                          child:
+                              _isLoading
+                                  ? const SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                  : const Text("Login"),
                         ),
                       ),
                       const SizedBox(height: 16),

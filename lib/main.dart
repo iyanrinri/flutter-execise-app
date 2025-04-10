@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:testing/pages/splash_screen.dart';
+import 'package:testing/services/api_service.dart';
 import 'package:testing/utils/statics.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'routes/routes.dart';
@@ -13,8 +13,6 @@ Future main() async {
   } else {
     await dotenv.load(fileName: ".env");
   }
-  final authProvider = AuthProvider();
-  await authProvider.initUser();
   runApp(const MyApp());
 }
 

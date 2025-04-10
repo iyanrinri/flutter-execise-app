@@ -15,11 +15,10 @@ class MainLayout extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(right: 8),
-              child: Image.network(
-                'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png',
-                height: 30,
-                width: 30,
-                errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+              child: Image.asset(
+                'assets/icon/app_icon.png',
+                width: 38, // kamu bisa ubah sesuai kebutuhan
+                height: 38,
               ),
             ),
             Text(title),
@@ -36,11 +35,10 @@ class MainLayout extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
-                    child: Image.network(
-                      'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png',
-                      height: 30,
-                      width: 30,
-                      errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+                    child: Image.asset(
+                      'assets/icon/app_icon.png',
+                      width: 38, // kamu bisa ubah sesuai kebutuhan
+                      height: 38,
                     ),
                   ),
                   const Text("Yuk Antri", style: TextStyle(color: Colors.white, fontSize: 24)),
@@ -53,6 +51,20 @@ class MainLayout extends StatelessWidget {
               title: const Text('Dashboard'),
               onTap: () {
                 Navigator.pushReplacementNamed(context, '/dashboard');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.store),
+              title: const Text('Merchants'),
+              onTap: () {
+                Navigator.pushReplacementNamed(context, '/merchants');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.people),
+              title: const Text('Users'),
+              onTap: () {
+                Navigator.pushReplacementNamed(context, '/users');
               },
             ),
             ListTile(

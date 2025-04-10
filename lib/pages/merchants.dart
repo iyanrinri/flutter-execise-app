@@ -4,14 +4,14 @@ import 'package:provider/provider.dart';
 import 'package:testing/providers/auth_provider.dart';
 import 'package:testing/layouts/main.dart';
 
-class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+class MerchantsPage extends StatefulWidget {
+  const MerchantsPage({super.key});
 
   @override
-  State<DashboardPage> createState() => _DashboardPageState();
+  State<MerchantsPage> createState() => _MerchantsPageState();
 }
 
-class _DashboardPageState extends State<DashboardPage> {
+class _MerchantsPageState extends State<MerchantsPage> {
   @override
   void initState() {
     super.initState();
@@ -23,13 +23,13 @@ class _DashboardPageState extends State<DashboardPage> {
     final user = auth.user;
     return DoubleBackToExitWrapper(
       child: MainLayout(
-        title: 'Dashboard',
+        title: 'Merchants',
         child: Scaffold(
           body: Center(
             child: Padding(
               padding: const EdgeInsets.only(right: 24.0, left: 24.0),
               child: Text(
-                "Halo ${user?['data']['name'] ?? 'User'}, kamu sudah login!",
+                "Merchants Page",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),

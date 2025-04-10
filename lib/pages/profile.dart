@@ -26,9 +26,12 @@ class _ProfilePageState extends State<ProfilePage> {
         title: 'Profile',
         child: Scaffold(
           body: Center(
-            child: Text(
-              "ID: ${user?['data']['id'] ?? 'ID'}\nID: ${user?['data']['name'] ?? 'Name'}\nID: ${user?['data']['email'] ?? 'email'}\n",
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            child: Padding(
+              padding: const EdgeInsets.only(right: 24.0, left: 24.0),
+              child: Text(
+                "ID: ${user?['data']['id'] ?? 'ID'}\nID: ${user?['data']['name'] ?? 'Name'}\nID: ${user?['data']['email'] ?? 'email'}\n",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         ),
