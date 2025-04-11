@@ -1,13 +1,12 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import 'package:testing/widgets/double_back_to_exit.dart';
-import 'package:testing/providers/auth_provider.dart';
+import 'package:testing/widgets/screens/welcome_slide.dart';
+import 'package:testing/widgets/auth/login_form.dart';
+import 'package:testing/widgets/buttons/back_button_header.dart';
+import 'package:testing/widgets/clipper/wave_clipper.dart';
+import 'package:testing/helpers/user_helper.dart';
 
-import '../services/api_service.dart';
-import 'dashboard.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -21,12 +20,11 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   final _rememberController = TextEditingController();
   final PageController _pageController = PageController();
-  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    checkUser();
+    UserHelper.checkUser(context);
   }
 
   @override
@@ -53,37 +51,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void checkUser() async {
-    Future.microtask(() async {
-      final apiService = ApiService();
-      final response = await apiService.sendRequest(
-        method: 'GET',
-        endpoint: '/user',
-        useAuth: true,
-      );
-      if (response?.statusCode == 200) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const DashboardPage()),
-        );
-      } else if (response == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.redAccent,
-            content: Text(
-              "Koneksi kamu sedang bermaslah, mencoba kembali dalam 5 detik",
-            ),
-          ),
-        );
-
-        // ⏳ Coba ulang dalam 3 detik
-        Future.delayed(const Duration(seconds: 3), () {
-          checkUser(); // retry otomatis
-        });
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return DoubleBackToExitWrapper(
@@ -102,41 +69,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Container(color: Colors.white),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 24.0, left: 24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Selamat Datang!",
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text("Aplikasi Antrian Digital"),
-                      const SizedBox(height: 15),
-                      ElevatedButton.icon(
-                        onPressed: _nextPage,
-                        icon: const Icon(Icons.arrow_forward),
-                        label: const Text("Selanjutnya"),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFF8080),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                WelcomeSlide(onNext: _nextPage),
               ],
             ),
 
@@ -149,140 +82,8 @@ class _LoginPageState extends State<LoginPage> {
                     child: Container(color: Colors.white),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 24.0, left: 16.0),
-                  // jarak dari atas & kiri
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 40),
-                      ElevatedButton(
-                        onPressed: _previousPage,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFF8080),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.all(12),
-                          shape: const CircleBorder(), // bikin tombolnya bulat
-                        ),
-                        child: const Icon(Icons.arrow_back),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Sign in",
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                      TextField(
-                        controller: _emailController,
-                        decoration: const InputDecoration(
-                          labelText: "Email",
-                          prefixIcon: Icon(Icons.email),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        decoration: const InputDecoration(
-                          labelText: "Password",
-                          prefixIcon: Icon(Icons.lock),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Checkbox(value: true, onChanged: (_) {}),
-                              const Text("Remember Me"),
-                            ],
-                          ),
-                          TextButton(
-                            onPressed: () {},
-                            child: const Text("Forgot Password?"),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed:
-                              _isLoading
-                                  ? null
-                                  : () async {
-                                    setState(() => _isLoading = true);
-
-                                    final auth = Provider.of<AuthProvider>(
-                                      context,
-                                      listen: false,
-                                    );
-                                    final resultLogin = await auth.login(
-                                      _emailController.text,
-                                      _passwordController.text,
-                                    );
-
-                                    setState(() => _isLoading = false);
-
-                                    if (resultLogin['status'] == true) {
-                                      Navigator.pushReplacementNamed(
-                                        context,
-                                        '/dashboard',
-                                      );
-                                    } else {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        // SnackBar(
-                                        //   content: Text(resultLogin['message']),
-                                        // ),
-                                        SnackBar(
-                                          content: Text(resultLogin['message'] ?? 'Login gagal'),
-                                        ),
-
-                                      );
-                                    }
-                                  },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFFF8080),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child:
-                              _isLoading
-                                  ? const SizedBox(
-                                    height: 24,
-                                    width: 24,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                  : const Text("Login"),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text("Don’t have an account? Sign up"),
-                      ),
-                    ],
-                  ),
-                ),
+                BackButtonHeader(onBack: _previousPage),
+                const LoginForm(),
               ],
             ),
           ],
@@ -290,25 +91,4 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-}
-
-// Wave Clip untuk bagian atas
-class WaveClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    Path path = Path();
-    path.lineTo(0, size.height * 0.75);
-    path.quadraticBezierTo(
-      size.width / 2,
-      size.height,
-      size.width,
-      size.height * 0.75,
-    );
-    path.lineTo(size.width, 0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
