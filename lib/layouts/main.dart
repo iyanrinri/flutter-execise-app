@@ -87,6 +87,12 @@ class _MainLayoutState extends State<MainLayout> {
                 if (role == 'ADMIN') // Only show for ADMIN
                   _buildDrawerItem(context, Icons.people, 'Users', '/users'),
                 _buildDrawerItem(context, Icons.person, 'News', '/news'),
+                _buildDrawerItem(
+                  context,
+                  Icons.map,
+                  'Map Playground',
+                  '/map-playground',
+                ),
               ],
             ),
           ),

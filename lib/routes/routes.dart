@@ -1,4 +1,5 @@
 import 'package:testing/pages/login.dart';
+import 'package:testing/pages/map_playground.dart';
 import 'package:testing/pages/merchants.dart';
 import 'package:testing/pages/news.dart';
 import 'package:testing/pages/splash_screen.dart';
@@ -12,5 +13,6 @@ final routes = {
   '/merchants': (context) => const MerchantsPage(),
   '/users': (context) => const UsersPage(),
   '/news': (context) => const NewsPage(),
+  '/map-playground': (context) => const MapPlayground(),
   '/login': (context) => const LoginPage(),
 };
