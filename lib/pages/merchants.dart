@@ -215,6 +215,7 @@ class _MerchantsPageState extends State<MerchantsPage> {
     return DoubleBackToExitWrapper(
       child: MainLayout(
         title: 'Merchants',
+        titleIcon: Icon(Icons.store),
         floatingActionButton: FloatingActionButton(
           onPressed: () => showMerchantDialog(),
           child: const Icon(Icons.add),

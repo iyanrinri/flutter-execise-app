@@ -7,9 +7,10 @@ class MainLayout extends StatefulWidget {
   final String title;
   final Widget child;
   final Widget? floatingActionButton;
+  final Icon ?titleIcon;
 
   const MainLayout({super.key, required this.title, required this.child,
-    this.floatingActionButton});
+    this.floatingActionButton, this.titleIcon});
 
   @override
   State<MainLayout> createState() => _MainLayoutState();
@@ -36,11 +37,22 @@ class _MainLayoutState extends State<MainLayout> {
           padding: EdgeInsets.only(
             left: 16,
             right: 16,
-            bottom: MediaQuery.of(context).viewPadding.bottom + 16,
+            bottom: MediaQuery
+                .of(context)
+                .viewPadding
+                .bottom + 16,
           ),
           child: widget.child,
         ),
       ),
+    );
+  }
+
+  Image _logo() {
+    return Image.asset(
+      _AppConstants.appIconPath,
+      width: 38,
+      height: 38,
     );
   }
 
@@ -51,11 +63,7 @@ class _MainLayoutState extends State<MainLayout> {
         children: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: Image.asset(
-              _AppConstants.appIconPath,
-              width: 38,
-              height: 38,
-            ),
+            child: widget.titleIcon ?? _logo(),
           ),
           Text(title),
         ],
@@ -100,7 +108,10 @@ class _MainLayoutState extends State<MainLayout> {
           _buildDrawerItem(context, Icons.person, 'Profile', '/profile'),
           _buildLogoutItem(context),
           Padding(padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewPadding.bottom + 16,
+            bottom: MediaQuery
+                .of(context)
+                .viewPadding
+                .bottom + 16,
           ))
         ],
       ),
@@ -129,12 +140,10 @@ class _MainLayoutState extends State<MainLayout> {
     );
   }
 
-  ListTile _buildDrawerItem(
-    BuildContext context,
-    IconData icon,
-    String title,
-    String routeName,
-  ) {
+  ListTile _buildDrawerItem(BuildContext context,
+      IconData icon,
+      String title,
+      String routeName,) {
     return ListTile(
       leading: Icon(icon),
       title: Text(title),

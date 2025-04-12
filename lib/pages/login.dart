@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:testing/widgets/double_back_to_exit.dart';
 import 'package:testing/widgets/screens/welcome_slide.dart';
@@ -20,11 +21,24 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   final _rememberController = TextEditingController();
   final PageController _pageController = PageController();
+  final storage = const FlutterSecureStorage();
+  bool _isWelcomeDone = false;
 
   @override
   void initState() {
     super.initState();
     UserHelper.checkUser(context);
+    _checkWelcome();
+  }
+
+  Future<void> _checkWelcome() async {
+    final doneWelcome = await storage.read(key: 'welcome');
+    if (doneWelcome == '1') {
+      _pageController.jumpToPage(1);
+    }
+    setState(() {
+      _isWelcomeDone = true;
+    });
   }
 
   @override
@@ -35,12 +49,14 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _nextPage() {
+  Future<void> _nextPage() async {
     _pageController.animateToPage(
       1,
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
     );
+
+    await storage.write(key: 'welcome', value: '1');
   }
 
   void _previousPage() {
@@ -51,8 +67,51 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Stack _loginSlider() {
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: ClipPath(
+            clipper: WaveClipper(),
+            child: Container(color: Colors.white),
+          ),
+        ),
+        BackButtonHeader(onBack: _previousPage),
+        const LoginForm(),
+      ],
+    );
+  }
+
+  Stack _welcomeSlider() {
+    return Stack(
+        children: [
+          Positioned.fill(
+            child: ClipPath(
+              clipper: WaveClipper(),
+              child: Container(color: Colors.white),
+            ),
+          ),
+          WelcomeSlide(onNext: _nextPage),
+        ],
+      );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (!_isWelcomeDone) {
+      return DoubleBackToExitWrapper(
+        child: Scaffold(
+          backgroundColor: const Color(0xFFFFB3B3),
+          body: PageView(
+            controller: _pageController,
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              _loginSlider()
+            ],
+          ),
+        ),
+      );
+    }
     return DoubleBackToExitWrapper(
       child: Scaffold(
         backgroundColor: const Color(0xFFFFB3B3),
@@ -60,32 +119,8 @@ class _LoginPageState extends State<LoginPage> {
           controller: _pageController,
           physics: const NeverScrollableScrollPhysics(),
           children: [
-            // Page 1 - Welcome
-            Stack(
-              children: [
-                Positioned.fill(
-                  child: ClipPath(
-                    clipper: WaveClipper(),
-                    child: Container(color: Colors.white),
-                  ),
-                ),
-                WelcomeSlide(onNext: _nextPage),
-              ],
-            ),
-
-            // Page 2 - Login
-            Stack(
-              children: [
-                Positioned.fill(
-                  child: ClipPath(
-                    clipper: WaveClipper(),
-                    child: Container(color: Colors.white),
-                  ),
-                ),
-                BackButtonHeader(onBack: _previousPage),
-                const LoginForm(),
-              ],
-            ),
+            _welcomeSlider(),
+            _loginSlider(),
           ],
         ),
       ),

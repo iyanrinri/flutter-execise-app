@@ -40,6 +40,11 @@ class _MyAppState extends State<MyApp> {
         title: 'Aplikasi Antrian Digital',
         theme: ThemeData(primarySwatch: Colors.blue),
         routes: routes,
+        builder: (context, child) {
+          return SafeArea(
+            child: child!, // Pastikan konten berada di dalam SafeArea
+          );
+        },
       ),
     );
   }

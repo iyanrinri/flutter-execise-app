@@ -86,6 +86,7 @@ class _NewsPageState extends State<NewsPage> {
     return DoubleBackToExitWrapper(
       child: MainLayout(
         title: 'Berita Terkini',
+        titleIcon: Icon(Icons.newspaper),
         child: ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: dummyFeeds.length,

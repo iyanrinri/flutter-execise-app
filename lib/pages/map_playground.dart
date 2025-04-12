@@ -3,7 +3,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
-
+import 'package:testing/layouts/main.dart';
+import 'package:testing/widgets/double_back_to_exit.dart';
 
 class MapPlayground extends StatefulWidget {
   const MapPlayground({super.key});
@@ -12,7 +13,8 @@ class MapPlayground extends StatefulWidget {
   MapPlaygroundState createState() => MapPlaygroundState();
 }
 
-class MapPlaygroundState extends State<MapPlayground> with TickerProviderStateMixin {
+class MapPlaygroundState extends State<MapPlayground>
+    with TickerProviderStateMixin {
   LatLng? currentLocation;
   final MapController _mapController = MapController();
   final LatLng _currentMapCenter = LatLng(0, 0);
@@ -44,10 +46,7 @@ class MapPlaygroundState extends State<MapPlayground> with TickerProviderStateMi
       end: destLocation.longitude,
     );
 
-    final zoomTween = Tween<double>(
-      begin: _currentMapZoom,
-      end: destZoom,
-    );
+    final zoomTween = Tween<double>(begin: _currentMapZoom, end: destZoom);
 
     // Buat instance baru dan simpan ke variabel lokal
     final controller = AnimationController(
@@ -83,7 +82,6 @@ class MapPlaygroundState extends State<MapPlayground> with TickerProviderStateMi
 
     controller.forward();
   }
-
 
   Future<void> moveToCurrentLocation() async {
     await _determinePosition();
@@ -129,59 +127,63 @@ class MapPlaygroundState extends State<MapPlayground> with TickerProviderStateMi
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Lokasi Saya")),
-      body:
-          currentLocation == null
-              ? Center(child: CircularProgressIndicator())
-              : Stack(
-                children: [
-                  FlutterMap(
-                    mapController: _mapController,
-                    options: MapOptions(
-                      initialCenter: currentLocation!,
-                      initialZoom: 15.0,
-                    ),
-                    children: [
-                      TileLayer(
-                        urlTemplate:
-                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        subdomains: ['a', 'b', 'c'],
-                        userAgentPackageName: 'com.testing.app',
-                        tileProvider: CancellableNetworkTileProvider(),
-                      ),
-                      MarkerLayer(
-                        markers: [
-                          Marker(
-                            point: currentLocation!,
-                            width: 80.0,
-                            height: 80.0,
-                            child: Icon(
-                              Icons.location_pin,
-                              color: Colors.blue,
-                              size: 40,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-
-                  Positioned(
-                    bottom: 20,
-                    right: 20,
-                    child: FloatingActionButton(
-                      heroTag: "btnLocation",
-                      backgroundColor: Colors.white,
-                      onPressed: moveToCurrentLocation,
-                      child: const Icon(Icons.my_location, color: Colors.black),
-                    ),
-                  )
-                ],
+    return DoubleBackToExitWrapper(
+      child: MainLayout(
+        title: 'Map Playground',
+        titleIcon: Icon(Icons.map),
+        child: currentLocation == null
+            ? Center(child: CircularProgressIndicator())
+            : Stack(
+          children: [
+            FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                initialCenter: currentLocation!,
+                initialZoom: 15.0,
               ),
+              children: [
+                TileLayer(
+                  urlTemplate:
+                  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  subdomains: ['a', 'b', 'c'],
+                  userAgentPackageName: 'com.testing.app',
+                  tileProvider: CancellableNetworkTileProvider(),
+                ),
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: currentLocation!,
+                      width: 80.0,
+                      height: 80.0,
+                      child: Icon(
+                        Icons.location_pin,
+                        color: Colors.blue,
+                        size: 40,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            Positioned(
+              bottom: 20,
+              right: 20,
+              child: FloatingActionButton(
+                heroTag: "btnLocation",
+                backgroundColor: Colors.white,
+                onPressed: moveToCurrentLocation,
+                child: const Icon(
+                  Icons.my_location,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

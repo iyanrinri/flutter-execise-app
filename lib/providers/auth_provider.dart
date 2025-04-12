@@ -71,14 +71,14 @@ class AuthProvider with ChangeNotifier {
         'message': 'Something wrong with your Network try again in few minutes',
       };
     };
-    final statusCode = response?.statusCode ?? 500;
-    final resData = response?.data;
+    final statusCode = response.statusCode ?? 500;
+    final resData = response.data;
     final data = {
       'status': false,
       'message': 'Session kamu tidak valid/kadarluasa',
     };
     if (resData != null) {
-      final data = response?.data;
+      final data = response.data;
       if (statusCode == 200) {
         _token = data['access_token'];
         await storage.write(key: 'token', value: _token);
@@ -91,7 +91,7 @@ class AuthProvider with ChangeNotifier {
         data['status'] = false;
         data['message'] = 'Session kamu tidak valid/kadarluasa';
       } else {
-        final responseData = response?.data;
+        final responseData = response.data;
         final message = responseData['message'] ?? 'Terjadi kesalahan yang tidak diketahui.' ;
         var errorMsg = 'Terjadi kesalahan yang tidak diketahui.';
 

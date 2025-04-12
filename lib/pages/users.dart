@@ -24,6 +24,7 @@ class _UsersPageState extends State<UsersPage> {
     return DoubleBackToExitWrapper(
       child: MainLayout(
         title: 'Users Management',
+        titleIcon: Icon(Icons.people),
         child: Center(
           child: Padding(
             padding: const EdgeInsets.only(right: 24.0, left: 24.0),

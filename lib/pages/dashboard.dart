@@ -24,6 +24,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return DoubleBackToExitWrapper(
       child: MainLayout(
         title: 'Dashboard',
+        titleIcon: Icon(Icons.dashboard),
         child: Center(
           child: Padding(
             padding: const EdgeInsets.only(right: 24.0, left: 24.0),

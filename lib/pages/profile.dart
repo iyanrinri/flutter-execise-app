@@ -24,6 +24,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return DoubleBackToExitWrapper(
       child: MainLayout(
         title: 'Profile',
+        titleIcon: Icon(Icons.person),
         child: Center(
           child: Padding(
             padding: const EdgeInsets.only(right: 24.0, left: 24.0),
