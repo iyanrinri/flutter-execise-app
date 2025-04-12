@@ -7,12 +7,15 @@ Dio getDio([BaseOptions? options]) {
   final dio = Dio(options);
 
   if (!kIsWeb) {
-    dio.httpClientAdapter = IOHttpClientAdapter()
-      ..onHttpClientCreate = (HttpClient client) {
+    dio.httpClientAdapter = IOHttpClientAdapter(
+      createHttpClient: () {
+        final client = HttpClient();
         client.badCertificateCallback =
             (X509Certificate cert, String host, int port) => true;
         return client;
-      };
+      },
+    );
+
   }
 
   return dio;

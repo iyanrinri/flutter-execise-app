@@ -1,39 +1,40 @@
-import 'package:testing/pages/dashboard.dart';
 import 'package:testing/services/api_service.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 
 class UserHelper {
-  static void checkUser(BuildContext context) async {
-    Future.microtask(() async {
-      final apiService = ApiService();
-      final response = await apiService.sendRequest(
-        method: 'GET',
-        endpoint: '/user',
-        useAuth: true,
-      );
-      if (response?.statusCode == 200) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const DashboardPage()),
-        );
-      } else if (response == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.redAccent,
-            content: Text(
-              "Koneksi kamu sedang bermaslah, mencoba kembali dalam 5 detik",
-            ),
+  static Future<bool> checkUser(BuildContext context) async {
+    final apiService = ApiService();
+    final response = await apiService.sendRequest(
+      method: 'GET',
+      endpoint: '/user',
+      useAuth: true,
+    );
+    if (response?.statusCode == 200) {
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => const DashboardPage()),
+      // );
+      return true;
+    } else if (response == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.redAccent,
+          content: Text(
+            "Koneksi kamu sedang bermaslah, mencoba kembali dalam 5 detik",
           ),
-        );
+        ),
+      );
 
-        // ⏳ Coba ulang dalam 3 detik
-        Future.delayed(const Duration(seconds: 3), () {
-          checkUser(context); // retry otomatis
-        });
-      }
-    });
+      // ⏳ Coba ulang dalam 3 detik
+      Future.delayed(const Duration(seconds: 3), () {
+        return checkUser(context); // retry otomatis
+      });
+      return false;
+    } else {
+      return false;
+    }
   }
 
   static bool isValidEmail(String email) {
@@ -43,10 +44,13 @@ class UserHelper {
 
   static String capitalizeName(String name) {
     if (name.isEmpty) return '';
-    return name.split(' ').map((word) {
-      if (word.isEmpty) return '';
-      return word[0].toUpperCase() + word.substring(1).toLowerCase();
-    }).join(' ');
+    return name
+        .split(' ')
+        .map((word) {
+          if (word.isEmpty) return '';
+          return word[0].toUpperCase() + word.substring(1).toLowerCase();
+        })
+        .join(' ');
   }
 
   static bool isAdmin(Map<String, dynamic> user) {

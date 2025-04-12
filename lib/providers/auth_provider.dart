@@ -70,7 +70,7 @@ class AuthProvider with ChangeNotifier {
         'status': false,
         'message': 'Something wrong with your Network try again in few minutes',
       };
-    };
+    }
     final statusCode = response.statusCode ?? 500;
     final resData = response.data;
     final data = {
@@ -82,6 +82,7 @@ class AuthProvider with ChangeNotifier {
       if (statusCode == 200) {
         _token = data['access_token'];
         await storage.write(key: 'token', value: _token);
+        await storage.write(key: 'access_token', value: _token);
         final userResponse = await initUser();
 
         if (userResponse['status'] == true) {

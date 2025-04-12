@@ -64,13 +64,13 @@ class ApiService with ChangeNotifier {
       }
       return response;
     } on DioException catch (e) {
-      print('Dio error: ${e.message}');
+      // print('Dio error: ${e.message}');
       if (e.response != null) {
         // return {'status': false, 'data': e.response?.data}
       }
       return e.response;
     } catch (e) {
-      print('Unexpected error: $e');
+      // print('Unexpected error: $e');
       return null;
     }
   }

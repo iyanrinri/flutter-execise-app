@@ -71,7 +71,7 @@ class _MerchantsPageState extends State<MerchantsPage> {
         });
       }
     } catch (e) {
-      print(e);
+      // print(e);
       setState(() => isLoadingMore = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error fetching more merchants: $e')),

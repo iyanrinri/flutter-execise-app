@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:testing/pages/dashboard.dart';
 
 import 'package:testing/widgets/double_back_to_exit.dart';
 import 'package:testing/widgets/screens/welcome_slide.dart';
@@ -27,18 +28,27 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    UserHelper.checkUser(context);
     _checkWelcome();
   }
 
   Future<void> _checkWelcome() async {
-    final doneWelcome = await storage.read(key: 'welcome');
-    if (doneWelcome == '1') {
-      _pageController.jumpToPage(1);
+    final userLoggedIn = await UserHelper.checkUser(context);
+    if (userLoggedIn) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const DashboardPage()),
+      );
+    } else {
+      final doneWelcome = await storage.read(key: 'welcome');
+      if (doneWelcome == '1') {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _pageController.jumpToPage(1);
+        });
+      }
+      setState(() {
+        _isWelcomeDone = true;
+      });
     }
-    setState(() {
-      _isWelcomeDone = true;
-    });
   }
 
   @override
@@ -76,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Container(color: Colors.white),
           ),
         ),
-        BackButtonHeader(onBack: _previousPage),
+        if (!_isWelcomeDone) BackButtonHeader(onBack: _previousPage),
         const LoginForm(),
       ],
     );
@@ -99,22 +109,16 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     if (!_isWelcomeDone) {
-      return DoubleBackToExitWrapper(
-        child: Scaffold(
-          backgroundColor: const Color(0xFFFFB3B3),
-          body: PageView(
-            controller: _pageController,
-            physics: const NeverScrollableScrollPhysics(),
-            children: [
-              _loginSlider()
-            ],
-          ),
-        ),
+      // Tunggu pengecekan selesai
+      return const Scaffold(
+        backgroundColor: Color(0xFFFFFFFF),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
+
     return DoubleBackToExitWrapper(
       child: Scaffold(
-        backgroundColor: const Color(0xFFFFB3B3),
+        backgroundColor: const Color(0xFFFDFDFD),
         body: PageView(
           controller: _pageController,
           physics: const NeverScrollableScrollPhysics(),

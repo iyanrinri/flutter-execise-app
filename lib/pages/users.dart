@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:testing/widgets/double_back_to_exit.dart';
-import 'package:provider/provider.dart';
-import 'package:testing/providers/auth_provider.dart';
 import 'package:testing/layouts/main.dart';
 
 class UsersPage extends StatefulWidget {
@@ -19,8 +17,6 @@ class _UsersPageState extends State<UsersPage> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthProvider>(context);
-    final user = auth.user;
     return DoubleBackToExitWrapper(
       child: MainLayout(
         title: 'Users Management',
