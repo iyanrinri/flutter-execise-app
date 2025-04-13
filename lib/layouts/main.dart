@@ -1,7 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:testing/providers/auth_provider.dart'; // Adjust import path as needed
 
 class MainLayout extends StatefulWidget {
   final String title;
@@ -17,16 +17,31 @@ class MainLayout extends StatefulWidget {
 }
 
 class _MainLayoutState extends State<MainLayout> {
+  Map<String, dynamic>? user;
+
+  @override
+  void initState() {
+    super.initState();
+    checkUser();
+  }
+
+  Future<void> checkUser() async {
+    const storage = FlutterSecureStorage();
+    final userJson = await storage.read(key: 'user');
+    if (userJson != null) {
+      final userData = jsonDecode(userJson);
+      setState(() {
+        user = userData['data'];
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthProvider>(context);
-    final user = auth.user;
-    final String role =
-        user?['data']?['role'] ?? ''; // Safe access with default
 
     return Scaffold(
       appBar: _buildAppBar(widget.title),
-      drawer: _buildDrawer(context, role),
+      drawer: _buildDrawer(context),
       floatingActionButton: widget.floatingActionButton,
       body: SafeArea(
         child: Padding(
@@ -71,7 +86,11 @@ class _MainLayoutState extends State<MainLayout> {
     );
   }
 
-  Drawer _buildDrawer(BuildContext context, String role) {
+  Drawer _buildDrawer(BuildContext context) {
+    if (user == null) {
+      return const Drawer(child: Center(child: CircularProgressIndicator()));
+    }
+    var currentRole = user?['role'] ?? 'USER';
     return Drawer(
       child: Column(
         children: [
@@ -92,7 +111,7 @@ class _MainLayoutState extends State<MainLayout> {
                   'Merchants',
                   '/merchants',
                 ),
-                if (role == 'ADMIN') // Only show for ADMIN
+                if (currentRole == 'ADMIN') // Only show for ADMIN
                   _buildDrawerItem(context, Icons.people, 'Users', '/users'),
                 _buildDrawerItem(context, Icons.person, 'News', '/news'),
                 _buildDrawerItem(
@@ -160,6 +179,7 @@ class _MainLayoutState extends State<MainLayout> {
       onTap: () async {
         const storage = FlutterSecureStorage();
         await storage.delete(key: 'token');
+        await storage.delete(key: 'user');
         Navigator.pop(context);
         Navigator.pushReplacementNamed(context, '/login');
       },

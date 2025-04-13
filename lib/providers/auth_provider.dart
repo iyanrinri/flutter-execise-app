@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -47,6 +49,7 @@ class AuthProvider with ChangeNotifier {
 
       if (userResponse?.statusCode == 200) {
         _user = userResponse?.data;
+        await storage.write(key: 'user', value: jsonEncode(_user));
         return {'status': true, 'data': _user};
       } else {
         // Token tidak valid, bisa dihapus
@@ -58,11 +61,11 @@ class AuthProvider with ChangeNotifier {
     return {'status': false, 'message': 'Invalid token'};
   }
 
-  Future login(String email, String password) async {
+  Future login(String email, String password, [bool remember = false]) async {
     final response = await _apiService.sendRequest(
       method: 'POST',
       endpoint: '/auth/login',
-      data: {'email': email, 'password': password},
+      data: {'email': email, 'password': password, 'remember': remember},
     );
 
     if (response == null) {

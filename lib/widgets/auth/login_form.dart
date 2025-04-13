@@ -19,13 +19,29 @@ class _LoginFormState extends State<LoginForm> {
   final _storage = const FlutterSecureStorage();
   bool _isLoading = false;
   bool _rememberMe = false;
-  var _savedToken;
+  String? _savedToken;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedToken();
+  }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+
+  void _loadSavedToken() async {
+    final token = await _storage.read(key: 'access_token');
+    if (mounted) {
+      setState(() {
+        _savedToken = token;
+      });
+    }
   }
 
   void _login() async {
@@ -44,7 +60,7 @@ class _LoginFormState extends State<LoginForm> {
     final auth = Provider.of<AuthProvider>(context, listen: false);
     final result = await auth.login(
       email,
-      password,
+      password, _rememberMe
     );
 
     setState(() => _isLoading = false);
@@ -82,7 +98,6 @@ class _LoginFormState extends State<LoginForm> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +179,7 @@ class _LoginFormState extends State<LoginForm> {
           ),
           const SizedBox(height: 10),
           // Tombol Fingerprint
-          if (_savedToken) IconButton(
+          if (_savedToken != null) IconButton(
             icon: const Icon(Icons.fingerprint, size: 40),
             onPressed: _loginWithFingerprint,
           ),

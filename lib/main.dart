@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:testing/pages/merchants/merchants_controller.dart';
+import 'package:testing/pages/users/users_controller.dart';
 import 'package:testing/utils/statics.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'routes/routes.dart';
@@ -33,6 +35,8 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => UsersController()),
+        ChangeNotifierProvider(create: (_) => MerchantsController()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

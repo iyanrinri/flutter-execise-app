@@ -46,20 +46,14 @@ class DashboardContent extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        const SizedBox(height: 10),
-        Text("Current", style: Theme.of(context).textTheme.labelMedium),
-        const SizedBox(height: 8),
-        Row(
-          children: const [
-            CircularStatusIndicator(),
-            SizedBox(width: 20),
-            Expanded(child: LineChartWidget()),
-          ],
-        ),
+        const SizedBox(height: 30),
+        LineChartWidget(),
         const SizedBox(height: 30),
         const RingChartWidget(),
-        const SizedBox(height: 20),
-        const Text("Select Time"),
+        const SizedBox(height: 30),
+        Divider(),
+        const SizedBox(height: 30),
+        Center(child: const Text("Select Time")),
         const SliderWidget(),
       ],
     );

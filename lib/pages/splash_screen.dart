@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../widgets/double_back_to_exit.dart';
 import 'login.dart';
 
@@ -12,16 +13,23 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+  final storage = const FlutterSecureStorage();
   @override
   void initState() {
     super.initState();
+    check();
+  }
 
-    Timer(const Duration(seconds: 2), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginPage()),
-      );
-    });
+  Future<void> check() async {
+    final token = await storage.read(key: 'token');
+    if (token == null) {
+      Timer(const Duration(seconds: 2), () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+      });
+    }
   }
 
   @override

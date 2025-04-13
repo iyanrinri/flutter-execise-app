@@ -1,5 +1,5 @@
-// widgets/double_back_to_exit.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // buat SystemNavigator.pop()
 
 class DoubleBackToExitWrapper extends StatefulWidget {
   final Widget child;
@@ -13,14 +13,10 @@ class DoubleBackToExitWrapper extends StatefulWidget {
 class _DoubleBackToExitWrapperState extends State<DoubleBackToExitWrapper> {
   DateTime? _lastBackPressed;
 
-  Future<bool> _onWillPop() async {
-    final canPop = Navigator.of(context).canPop();
-    if (canPop) return true;
-
-    // Tidak bisa pop, maka tampilkan notif dulu
-    if (_lastBackPressed == null ||
-        DateTime.now().difference(_lastBackPressed!) > const Duration(seconds: 2)) {
-      _lastBackPressed = DateTime.now();
+  Future<bool> _onWillExitApp() async {
+    final now = DateTime.now();
+    if (_lastBackPressed == null || now.difference(_lastBackPressed!) > const Duration(seconds: 2)) {
+      _lastBackPressed = now;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Tekan sekali lagi untuk keluar"),
@@ -29,18 +25,18 @@ class _DoubleBackToExitWrapperState extends State<DoubleBackToExitWrapper> {
       );
       return false;
     }
-    return true; // keluar aplikasi
+    return true;
   }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
+      onPopInvoked: (didPop) async {
         if (!didPop) {
-          final shouldPop = await _onWillPop();
-          if (shouldPop && context.mounted) {
-            Navigator.of(context).maybePop(result);
+          final shouldExit = await _onWillExitApp();
+          if (shouldExit) {
+            SystemNavigator.pop();
           }
         }
       },
